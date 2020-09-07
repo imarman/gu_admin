@@ -70,4 +70,15 @@ service.interceptors.response.use(
   }
 )
 
+/**
+ * 还可以进一步封装封装
+ */
+// export const getRequest = (url, params) => {
+//   return service({
+//     url: url,
+//     method: 'get',
+//     data: params
+//   })
+// }
+
 export default service
