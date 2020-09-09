@@ -5,7 +5,14 @@
     <el-form
       :inline="true">
       <el-form-item>
-        <el-input v-model="searchObj.name" placeholder="讲师"/>
+        <!--        <el-input v-model="searchObj.name" placeholder="讲师"/>-->
+        <el-autocomplete
+          :fetch-suggestions="querySearch"
+          v-model="searchObj.name"
+          :trigger-on-focus="false"
+          class="inline-input"
+          value-key="name"
+          placeholder="讲师"/>
       </el-form-item>
 
       <el-form-item>
@@ -36,11 +43,18 @@
       </el-form-item>
     </el-form>
 
+    <!-- 工具条 -->
+    <div style="margin-bottom: 10px;">
+      <el-button type="danger" size="mini" @click="batchRemove()">批量删除</el-button>
+    </div>
+
     <!-- 表格 -->
     <el-table
       :data="list"
       border
-      stripe>
+      stripe
+      @selection-change="handleSelectionChange">
+      <el-table-column type="selection"/>
       <el-table-column label="ID" width="50">
         <!-- 使用连续的序号 -->
         <template slot-scope="scope">
@@ -114,7 +128,9 @@ export default {
         level: '',
         joinDateBegin: '',
         joinDateEnd: ''
-      }
+      },
+      // 选中的纪录列表
+      multipleSelection: []
     }
   },
   created() {
@@ -173,6 +189,63 @@ export default {
     // 去更改页面
     toUpdate(id) {
       this.$router.push({ path: `/teacher/edit/${id}` })
+    },
+    // 批量删除
+    batchRemove() {
+      // 判断是否选中数据
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: '请选择数据'
+        })
+        return
+      }
+      this.$confirm('此操作将永久删除这些数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const idList = []
+        this.multipleSelection.forEach(item => {
+          idList.push(item.id)
+        })
+        teacherApi.batchRemove(idList).then(resp => {
+          // 获取所有 讲师
+          this.getTeacherList()
+          // console.log(resp)
+          this.$message({
+            type: 'success',
+            message: resp.message
+          })
+        })
+      }).catch((err) => {
+        // 如果是取消删除, 是 cancel
+        // 如果是后端传来的错误, 不能按这个走
+        if (err === 'cancel') {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        }
+      })
+    },
+    handleSelectionChange(selection) {
+      // 拿到选中的数据
+      this.multipleSelection = selection
+      // console.log(this.multipleSelection)
+    },
+    // 输入建议
+    querySearch(queryString, callback) {
+      // console.log('queryString=', queryString)
+      teacherApi.selectNameListByKey(queryString).then(resp => {
+        // console.log(resp.data.nameList)
+        /*
+          必须是 [{"value": "name"}] 格式, key 必须是 value
+          所以在上面定义了 value-key="name" 因为后端传来的 key 是 name
+          这个也可以在后端更改, 但是前端更方便
+         */
+        callback(resp.data.nameList)
+      })
     }
   }
 }

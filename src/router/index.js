@@ -58,7 +58,10 @@ export const constantRouterMap = [
         path: 'list',
         name: 'TeacherList',
         component: () => import('@/views/teacher/list'),
-        meta: { title: '讲师列表' }
+        meta: {
+          title: '讲师列表'
+          // icon: 'el-icon-user'
+        }
       },
       {
         path: 'create',

@@ -34,6 +34,7 @@
         <el-upload
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
+          :on-error="handleAvatarError"
           :before-upload="beforeAvatarUpload"
           class="avatar-uploader"
           action="http://localhost:9130/admin/oss/file/upload?module=avatar">
@@ -129,15 +130,23 @@ export default {
         this.$router.push({ path: '/teacher/list' })
       })
     },
-    // 上传成功的狗子
+    // 上传成功的钩子
     handleAvatarSuccess(response) {
       // response 没有经过 axios 的拦截器, 因为没有调用我们写的 api
       if (response.success) {
         this.$message.success(response.message)
+        this.teacher.avatar = response.data.url
+        // 强制重新渲染, 不然上传之后回显有点问题
+        this.$forceUpdate()
+      } else {
+        // 非 20000 错误， http code = 200 但是后台错误
+        this.$message.error(response.message)
       }
-      this.teacher.avatar = response.data.url
-      // 强制重新渲染, 不然上传之后回显有点问题
-      this.$forceUpdate()
+    },
+    // 上传失败的钩子
+    handleAvatarError() {
+      // http 失败
+      this.$message.success('上传失败!')
     },
     // 文件上传之前的钩子 可以用于校验
     beforeAvatarUpload(file) {
