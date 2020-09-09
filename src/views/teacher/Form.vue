@@ -3,10 +3,10 @@
     <!-- 输入表单 -->
     <el-form label-width="120px">
       <el-form-item label="讲师名称">
-        <el-input v-model="teacher.name" />
+        <el-input v-model="teacher.name"/>
       </el-form-item>
       <el-form-item label="入驻时间">
-        <el-date-picker v-model="teacher.joinDate" value-format="yyyy-MM-dd" />
+        <el-date-picker v-model="teacher.joinDate" value-format="yyyy-MM-dd"/>
       </el-form-item>
       <el-form-item label="讲师排序">
         <el-input-number v-model="teacher.sort" :min="0"/>
@@ -29,13 +29,25 @@
       <el-form-item label="讲师资历">
         <el-input v-model="teacher.career" :rows="10" type="textarea"/>
       </el-form-item>
-      <!-- 讲师头像：TODO -->
+      <!-- 讲师头像上传 -->
+      <el-form-item label="讲师头像">
+        <el-upload
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+          class="avatar-uploader"
+          action="http://localhost:9130/admin/oss/file/upload?module=avatar">
+          <img v-if="teacher.avatar" :src="teacher.avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"/>
+        </el-upload>
+      </el-form-item>
 
       <el-form-item>
         <el-button
           :disabled="saveBtnDisabled"
           type="primary"
-          @click="saveOrUpdate()">{{ saveOrUpdateVal }}</el-button>
+          @click="saveOrUpdate()">{{ saveOrUpdateVal }}
+        </el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -56,7 +68,8 @@ export default {
         level: 1,
         joinDate: '',
         intro: '',
-        career: ''
+        career: '',
+        avatar: ''
       },
       saveOrUpdateVal: '保存',
       // 默认按钮可用  防止表单重复提交
@@ -115,11 +128,61 @@ export default {
         })
         this.$router.push({ path: '/teacher/list' })
       })
+    },
+    // 上传成功的狗子
+    handleAvatarSuccess(response) {
+      // response 没有经过 axios 的拦截器, 因为没有调用我们写的 api
+      if (response.success) {
+        this.$message.success(response.message)
+      }
+      this.teacher.avatar = response.data.url
+      // 强制重新渲染, 不然上传之后回显有点问题
+      this.$forceUpdate()
+    },
+    // 文件上传之前的钩子 可以用于校验
+    beforeAvatarUpload(file) {
+      // 校验是否是 JPG 格式图片
+      const isJPG = file.type === 'image/jpeg'
+      // 校验大小是否小于 2M
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
     }
   }
 }
 </script>
 
-<style scoped>
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
 
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader .avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+
+.avatar-uploader img {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>
