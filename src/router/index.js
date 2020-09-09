@@ -50,7 +50,9 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/teacher/list',
     name: 'Teacher',
-    meta: { title: '讲师管理' },
+    meta: {
+      title: '讲师管理'
+    },
     children: [
       {
         path: 'list',
@@ -67,6 +69,7 @@ export const constantRouterMap = [
         }
       },
       {
+        // 更改
         path: 'edit/:id',
         name: 'TeacherEdit',
         component: () => import('@/views/teacher/form'),
@@ -76,7 +79,7 @@ export const constantRouterMap = [
         hidden: true
       }
     ]
-  },
+  }
 ]
 
 export default new Router({

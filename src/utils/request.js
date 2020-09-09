@@ -56,6 +56,7 @@ service.interceptors.response.use(
       }
       return Promise.reject('error')
     } else {
+      // 返回了 response.data  所以 以后取数据之后要 response.data.items 就行了
       return response.data
     }
   },
