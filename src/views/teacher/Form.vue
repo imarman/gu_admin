@@ -37,7 +37,7 @@
           :on-error="handleAvatarError"
           :before-upload="beforeAvatarUpload"
           class="avatar-uploader"
-          action="http://localhost:9130/admin/oss/file/upload?module=avatar">
+          action="http://localhost:9120/admin/oss/file/upload?module=avatar">
           <img v-if="teacher.avatar" :src="teacher.avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"/>
         </el-upload>
