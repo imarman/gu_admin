@@ -56,7 +56,10 @@
           placeholder="请填写课程的总课时数"/>
       </el-form-item>
 
-      <!-- 课程简介 TODO -->
+      <!-- 课程简介-->
+      <el-form-item label="课程简介">
+        <tinymce :height="300" v-model="courseInfo.description"/>
+      </el-form-item>
 
       <!-- 课程封面 TODO -->
 
@@ -83,8 +86,13 @@
 import courseApi from '@/api/course'
 import teacherApi from '@/api/teacher'
 import subjectApi from '@/api/subject'
+/* 引入富文本组件 */
+import Tinymce from '@/components/Tinymce'
 
 export default {
+  components: {
+    Tinymce
+  },
   data() {
     return {
       // 按钮是否禁用
@@ -155,6 +163,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.tinymce-container {
+  position: relative;
+  line-height: normal;
+}
 </style>
