@@ -61,14 +61,27 @@
         <tinymce :height="300" v-model="courseInfo.description"/>
       </el-form-item>
 
-      <!-- 课程封面 TODO -->
+      <!-- 课程封面 -->
+      <el-form-item label="课程封面">
+        <el-upload
+          :show-file-list="false"
+          :on-success="handleCoverSuccess"
+          :before-upload="beforeCoverUpload"
+          :on-error="handleCoverError"
+          class="cover-uploader"
+          action="http://localhost:9120/admin/oss/file/upload?module=cover">
+          <img v-if="courseInfo.cover" :src="courseInfo.cover" alt="课程封面">
+          <i v-else class="el-icon-plus avatar-uploader-icon"/>
+        </el-upload>
+      </el-form-item>
 
       <el-form-item label="课程价格">
         <el-input-number
           :min="0"
           v-model="courseInfo.price"
           controls-position="right"
-          placeholder="免费课程请设置为0元"/> 元
+          placeholder="免费课程请设置为0元"/>
+        元
       </el-form-item>
     </el-form>
 
@@ -76,7 +89,8 @@
       <el-button
         :disabled="saveBtnDisabled"
         type="primary"
-        @click="saveAndNext()">保存并下一步</el-button>
+        @click="saveAndNext()">保存并下一步
+      </el-button>
     </div>
   </div>
 </template>
@@ -158,6 +172,33 @@ export default {
           this.subjectLevelTwoList = levelOneList.children
         }
       })
+    },
+    // 上传成功回调
+    handleCoverSuccess(res, file) {
+      if (res.success) {
+        // console.log(res)
+        this.courseInfo.cover = res.data.url
+        // 强制重新渲染
+        this.$forceUpdate()
+      } else {
+        this.$message.error('上传失败!')
+      }
+    },
+    handleCoverError() {
+      this.$message.success('上传失败(http)!')
+    },
+    // 上传校验
+    beforeCoverUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
     }
   }
 }
@@ -167,5 +208,32 @@ export default {
 .tinymce-container {
   position: relative;
   line-height: normal;
+}
+
+.cover-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.cover-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.cover-uploader .avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 640px;
+  height: 357px;
+  line-height: 357px;
+  text-align: center;
+}
+
+.cover-uploader img {
+  width: 640px;
+  height: 357px;
+  display: block;
 }
 </style>
