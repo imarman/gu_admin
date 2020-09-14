@@ -42,12 +42,13 @@ export default {
   name: 'SubjectImport',
   data() {
     return {
-      defaultExcelTemplate: process.env.OSS_PATH + '/excel/课程分类列表模板.xls', // 默认Excel模板
+      // 默认 Excel 模板
+      defaultExcelTemplate: process.env.OSS_PATH + '/excel/课程分类列表模板.xls',
       importBtnDisabled: false // 导入按钮是否禁用
     }
   },
   methods: {
-    // 上传多于一个文件时
+    // 上传文件数多于约定数量时触发
     fileUploadExceed() {
       this.$message.warning('只能选取一个文件')
     },
@@ -55,16 +56,20 @@ export default {
     // 上传
     submitUpload() {
       this.importBtnDisabled = true
+      // 拿到组件对象,在用 upload 对象的 submit 方法上传
+      // $refs 可以拿到给组件定义的 ref   ref 就是给组件起名字
       this.$refs.upload.submit() // 提交上传请求
     },
-
     fileUploadSuccess(response) {
       this.importBtnDisabled = false
+      this.$message.success(response.message)
+      this.$refs.upload.clearFiles() // 清空文件列表
     },
 
-    fileUploadError(response) {
+    fileUploadError(err) {
       this.importBtnDisabled = false
-      this.$message.success('导入失败!')
+      this.$message.error(err.message)
+      this.$refs.upload.clearFiles() // 清空文件列表
     }
   }
 }
