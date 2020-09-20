@@ -20,5 +20,12 @@ export default {
       method: 'put',
       data: courseInfo
     })
+  },
+  getPageList(page, limit, searchObj) {
+    return request({
+      url: `/admin/edu/course/list/${page}/${limit}`,
+      method: 'get',
+      params: searchObj
+    })
   }
 }

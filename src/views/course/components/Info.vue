@@ -102,7 +102,6 @@ import teacherApi from '@/api/teacher'
 import subjectApi from '@/api/subject'
 /* 引入富文本组件 */
 import Tinymce from '@/components/Tinymce'
-import course from '../../../api/course'
 
 export default {
   components: {
@@ -132,6 +131,15 @@ export default {
     }
   },
   created() {
+    // courseId 来源于路由
+    // if (this.$route.params.id) {
+    //   this.$parent.courseId = this.$route.params.id
+    // }
+    if (this.$route.name === 'CourseInfoEdit') {
+      this.$parent.courseId = this.$route.params.id
+    }
+
+    // courseId 来源夫父组件
     this.initTeacherList()
     // 回显
     if (this.$parent.courseId) {
