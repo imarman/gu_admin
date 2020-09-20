@@ -27,5 +27,25 @@ export default {
       method: 'get',
       params: searchObj
     })
+  },
+  removeById(id) {
+    return request({
+      url: `/admin/edu/course/remove/${id}`,
+      method: 'delete'
+    })
+  },
+  // 获取发布课程信息
+  getCoursePublishById(id) {
+    return request({
+      url: `/admin/edu/course/course-publish/${id}`,
+      method: 'get'
+    })
+  },
+  // 发布课程
+  publishCourseById(id) {
+    return request({
+      url: `/admin/edu/course/publish-course/${id}`,
+      method: 'put'
+    })
   }
 }
