@@ -35,6 +35,7 @@ export default {
   data() {
     return {
       active: 0,
+      // courseId = null 就说明市新增, 不是 null 是修改
       courseId: null
     }
   },

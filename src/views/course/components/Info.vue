@@ -102,6 +102,7 @@ import teacherApi from '@/api/teacher'
 import subjectApi from '@/api/subject'
 /* 引入富文本组件 */
 import Tinymce from '@/components/Tinymce'
+import course from '../../../api/course'
 
 export default {
   components: {
@@ -132,19 +133,54 @@ export default {
   },
   created() {
     this.initTeacherList()
-    this.initSubjectList()
+    // 回显
+    if (this.$parent.courseId) {
+      this.fetchCourseInfoById(this.$parent.courseId)
+    } else {
+      // 新增：只渲染一级类别
+      this.initSubjectList()
+    }
   },
   methods: {
+    fetchCourseInfoById(id) {
+      courseApi.getCourseInfoById(id).then(resp => {
+        this.courseInfo = resp.data.item
+
+        // 课程类别渲染
+        subjectApi.getNestedTreeList().then(resp => {
+          this.subjectList = resp.data.items
+          // 判断 this.subjectLet 下哪个一级类别是当前绑定的一级类别
+          this.subjectList.forEach(subject => {
+            if (subject.id === this.courseInfo.subjectParentId) {
+              // 找到对应一级类别的二级列表
+              this.subjectLevelTwoList = subject.children
+            }
+          })
+        })
+      })
+    },
     saveAndNext() {
       this.saveBtnDisabled = true
-      this.saveData()
+      if (!this.$parent.courseId) {
+        this.saveData()
+      } else {
+        this.updateData()
+      }
     },
+    // 保存课程信息
     saveData() {
       courseApi.saveCourseInfo(this.courseInfo).then(resp => {
         this.$message.success(resp.message)
         // 获取 courseId, 并给父组件的 courseId 赋值
         this.$parent.courseId = resp.data.courseId
         // 访问父组件的成员 this.$parent
+        this.$parent.active += 1
+      })
+    },
+    // 更新课程信息
+    updateData() {
+      courseApi.updateCourseInfoById(this.courseInfo).then(resp => {
+        this.$message.success(resp.message)
         this.$parent.active += 1
       })
     },
