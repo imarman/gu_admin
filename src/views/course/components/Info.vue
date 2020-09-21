@@ -135,9 +135,9 @@ export default {
     // if (this.$route.params.id) {
     //   this.$parent.courseId = this.$route.params.id
     // }
-    if (this.$route.name === 'CourseInfoEdit') {
-      this.$parent.courseId = this.$route.params.id
-    }
+    // if (this.$route.name === 'CourseInfoEdit') {
+    //   this.$parent.courseId = this.$route.params.id
+    // }
 
     // courseId 来源夫父组件
     this.initTeacherList()

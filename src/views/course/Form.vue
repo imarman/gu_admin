@@ -39,6 +39,20 @@ export default {
       courseId: null
     }
   },
+  created() {
+    // 通过获取路由名称，判断进入哪个步骤
+    if (this.$route.name === 'CourseChapterEdit') {
+      // 步骤一
+      // 路由带着 id 参数, 可以给 courseId 赋值
+      this.courseId = this.$route.params.id
+      // 第二页 创建课程大纲页
+      this.active = 1
+    } else if (this.$route.name === 'CourseInfoEdit') {
+      // 步骤 二
+      this.courseId = this.$route.params.id
+      this.active = 0
+    }
+  },
   methods: {
   }
 }
